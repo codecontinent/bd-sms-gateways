@@ -3,6 +3,7 @@ node_modules/
 
 # build
 dist/
+*.tgz
 
 # logs
 npm-debug.log*
@@ -20,6 +21,11 @@ coverage/
 .vscode/*
 !.vscode/settings.json
 
+.husky/*
+!.husky/pre-commit
+!.husky/commit-msg
+
 .pid*
 *.lock
 *.swp
+

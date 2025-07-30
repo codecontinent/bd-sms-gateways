@@ -1,2 +1,5 @@
-export * from './client';
-export * as adapter from "./adapters";
+import SmsGateway from "./gateways.js";
+
+export { SmsGateway }; // destructuring export
+
+export default SmsGateway; // default export
