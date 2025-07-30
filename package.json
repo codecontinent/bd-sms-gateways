@@ -1,0 +1,12 @@
+{
+  "name": "smslib",
+  "version": "0.0.1",
+  "description": "Unified SMS Providers client package for Node.js applications",
+  "scripts": {
+    "test": "echo \"Testing...\""
+  },
+  "keywords": ["sms", "sms-gateway", "sms-client", "bd-sms", "node", "deno", "bun"],
+  "author": "CodeContinent <codecontinent@gmail.com>",
+  "license": "MIT",
+  "packageManager": "pnpm@10.10.0"
+}
