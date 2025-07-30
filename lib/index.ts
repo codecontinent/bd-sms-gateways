@@ -1,2 +1,1 @@
-export * from './client';
-export * as adapter from "./adapters";
+export { default as BdSmsProviders } from "./client";
