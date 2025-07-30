@@ -1,0 +1,30 @@
+# deps
+node_modules/
+
+# build
+dist/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# coverage
+coverage/
+
+# Misc. & Others
+.DS_Store
+.exe
+.ini
+.idea/
+.vscode/*
+!.vscode/settings.json
+
+.husky/*
+!.husky/pre-commit
+!.husky/commit-msg
+
+.pid*
+*.lock
+*.swp
+
