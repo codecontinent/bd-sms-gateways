@@ -5,34 +5,42 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: read
+
 jobs:
   release:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+    steps:
+      - name: 🔍 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Important for semantic-release
+
+      - name: 🧰 Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
-      
-      - name: Install pnpm
+
+      - name: 📦 Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 10 
+          version: 10
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Install dependencies
+        run: pnpm install --frozen-lockfile
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Run build
+      - name: 🏗️ Run build
         run: pnpm run build
 
-      - name: Run semantic-release
+      - name: 🚀 Run semantic-release
         env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: pnpm exec semantic-release

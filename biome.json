@@ -3,10 +3,23 @@
   "vcs": {
     "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": true
+    "useIgnoreFile": false
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "includes": [
+      "lib/**/*",
+      "biome.json",
+      "tsconfig.json",
+      "tsconfig.types.json",
+      "package.json",
+      ".github/**/*",
+      "./CODE_OF_CONDUCT.md",
+      "./CODE_OF_CONDUCT_BN.md",
+      "./CONTRIBUTING.md",
+      "./README.md",
+      "./commitlint.config.js"
+    ]
   },
   "formatter": {
     "enabled": true,
