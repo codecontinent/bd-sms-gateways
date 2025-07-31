@@ -21,6 +21,13 @@ jobs:
         with:
           fetch-depth: 0 # Important for semantic-release
 
+      - name: 🔑 Generate GitHub App Token
+        id: generate_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: 🧰 Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -42,6 +49,6 @@ jobs:
 
       - name: 🚀 Run semantic-release
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: pnpm exec semantic-release
