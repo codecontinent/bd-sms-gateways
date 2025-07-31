@@ -44,10 +44,18 @@
     "sms",
     "sms-gateway",
     "sms-client",
+    "sms-provider",
+    "bangladeshi-sms",
     "bd-sms",
+    "bd-sms-gateway",
     "node",
     "deno",
-    "bun"
+    "bun",
+    "cloudflare-workers",
+    "typescript",
+    "javascript",
+    "esm",
+    "cjs"
   ],
   "author": {
     "name": "CodeContinent",
