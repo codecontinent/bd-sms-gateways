@@ -13,6 +13,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'codecontinent' && github.event.repository.fork == false
 
     steps:
       - name: 🔍 Checkout repository
