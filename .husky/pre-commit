@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 pnpm test && pnpm exec lint-staged
+=======
+pnpm test
+>>>>>>> e800823ab41cfb425ab0551516e2e9ae6d84d35b

@@ -4,28 +4,6 @@ import axios from "axios";
 export const httpRequestTypes = ["get", "post"] as const;
 export type HttpRequestType = (typeof httpRequestTypes)[number];
 
-// Testing mode helper base_url composer
-// modes. 'mock' for local testing, or development mock only
-// and '*' for production or live environment
-export const getBaseUrl = (
-  base: string,
-  url: string,
-  mode: "mock" | "*" = "*",
-  localBase: string = "",
-) => {
-  // If mode is 'mock', append 'mock' to the base URL
-  if (mode === "mock") {
-    // bypass the base_url for local testing with mock-server base_url
-    if (url.startsWith(base)) {
-      url = url.slice(base.length);
-    }
-    return `${localBase}${url}`;
-  }
-
-  // If mode is '*' (default), return the original URL
-  return url;
-};
-
 // Request Headers for various HTTP clients
 export const commonHttpReqContentTypes = [
   "application/json", // <-- common for REST APIs that accept JSON payloads
@@ -55,6 +33,16 @@ export const composeHeaders = (
   return composedHeaders;
 };
 
+// Check request body payload type
+const safeComposeRequestBodyData = (body: unknown) => {
+  if (typeof body === "object" && body !== null) {
+    // If Object / Array, convert to JSON string
+    return JSON.stringify(body);
+  }
+
+  return body; // string / number / boolean etc.
+};
+
 // API calling helper function uses 'Axios' as the HTTP client
 export const axApiCall = async <R = unknown>(
   method: HttpRequestType,
@@ -66,7 +54,7 @@ export const axApiCall = async <R = unknown>(
     // Example axios call
     const response = await axios[method]<R>(endpoint, {
       headers,
-      data: body ? JSON.stringify(body) : undefined,
+      data: body ? safeComposeRequestBodyData(body) : undefined,
     });
 
     if (!response) {

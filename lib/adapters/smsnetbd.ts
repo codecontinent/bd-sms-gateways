@@ -2,8 +2,6 @@
  *===========================================================
  * [SmsNetBd](https://sms.net.bd) SMS Gateway Adapter
  * This adapter is used to send SMS via SmsNetBd API.
- * It provides the client to have an adapter for SmsNetBd
- * to send SMS messages and others available features.
  * -----------------------------------------------------------
  * Author: Mr. Meaow
  * License: [MIT](https://opensource.org/license/mit/)
@@ -13,7 +11,7 @@
  */
 
 import { z } from "zod";
-import { axApiCall, composeHeaders } from "../common";
+import { axApiCall, composeHeaders } from "../common.js";
 
 const SmsNetBdEndpoints = {
   SEND_SMS: "/sendsms",
@@ -33,15 +31,11 @@ const SmsNetBdEndpoints = {
  *----------------------------------------------------------------*/
 
 // schema for validating the payloads ...
-const basePayloadSchema = z.object({
-  api_key: z.string().min(5, "API Key is required"),
-});
-
-const validatePayloadWithReqID = basePayloadSchema.extend({
+const validatePayloadWithReqID = z.object({
   request_id: z.union([z.string(), z.number()]).transform((val) => String(val)),
 });
 
-const validateSendSmsPayload = basePayloadSchema.extend({
+const validateSendSmsPayload = z.object({
   msg: z.string().min(1, "Message content is required"),
   to: z
     .string()
@@ -71,72 +65,130 @@ const validateSendSmsPayload = basePayloadSchema.extend({
   content_id: z.string().optional(),
 });
 
-// [SMSNetBD] Class
+/**
+ * Configuration options for the SmsNetBd adapter.
+ *
+ * @property api_key - API key for authentication. **Required.**
+ * @property base - Base URL for the API. Defaults to `"https://api.sms.net.bd"` if not provided.
+ */
+export interface SmsNetBdConfig {
+  api_key: string; // @required \\ API key for authentication
+  base?: string; // Base URL for the API, default is "https://api.sms.net.bd"
+}
+
+/**
+ * SmsNetBd Adapter Class
+ *
+ * This class provides methods to interact with the SmsNetBd API for sending SMS, checking balance, and getting delivery reports.
+ * It uses the `axios` library for HTTP requests and `zod` for payload validation.
+ *
+ * @class SmsNetBd
+ * @param {SmsNetBdConfig} config - Configuration options for the adapter.
+ * @property {string} base - Base URL for the API, defaults to "https://api.sms.net.bd".
+ * @property {string} api_key - API key for authentication.
+ * @throws {Error} If the payload validation fails or if the API response indicates an error.
+ * @example
+ * const smsAdapter = new SmsNetBd({
+ *   api_key: "your_api_key_here",
+ *   base: "https://api.sms.net.bd" // Optional, defaults to this value
+ * });
+ * await smsAdapter.sendSms({
+ *  msg: "Hello, this is a test message!",
+ *  to: "8801XXXXXXXX, 8801YYYYYYYY",
+ *  schedule: "2025-07-30 10:00:00", // Optional
+ *  sender_id: "YourSenderID", // Optional
+ *  content_id: "12345" // Optional, required for bulk SMS
+ * });
+ */
 export class SmsNetBd {
-  constructor(
-    protected base: string = "https://api.sms.net.bd" /*= default from SMSNetBD =*/,
-  ) {}
+  private base: string;
+  private api_key: string;
+
+  constructor(protected config: SmsNetBdConfig) {
+    // Set default base URL if not provided
+    this.base = config.base ?? "https://api.sms.net.bd";
+    this.api_key = config.api_key;
+  }
 
   // SEND: SMS
   public async sendSms(payload: SmsNetBdRequestProps) {
     // Validate the payload using zod schema
-    const data = validateSendSmsPayload.safeParse(payload);
-    if (!data.success) {
+    const parsed = validateSendSmsPayload.safeParse(payload);
+    if (!parsed.success) {
       throw new Error(
-        `Validation Error: ${data.error.issues.map((issue) => issue.message).join(", ")}`,
+        `Validation Error: ${parsed.error.issues.map((issue) => issue.message).join(", ")}`,
       );
     }
 
-    return axApiCall<SmsNetBdResponseProps>(
+    const res = await axApiCall<SmsNetBdResponseProps>(
       "post",
       `${this.base}${SmsNetBdEndpoints.SEND_SMS}`,
       composeHeaders({
         "Content-Type": "application/x-www-form-urlencoded",
       }),
-      data.data,
+      { ...parsed.data, api_key: this.api_key }, // Include api_key from config
     );
+
+    if (res.error !== 0) {
+      throw new Error(`${res.error}: ${res.msg}`);
+    }
+
+    return res;
   }
 
   // GET: SMS Account Balance
-  public async getBalance(api_key: string) {
-    const data = basePayloadSchema.parse({ api_key });
-
-    return axApiCall<SmsNetBdResponseProps>(
+  public async getBalance() {
+    const res = await axApiCall<SmsNetBdResponseProps>(
       "post",
       `${this.base}${SmsNetBdEndpoints.GET_BALANCE}`,
       composeHeaders({
         "Content-Type": "application/x-www-form-urlencoded",
       }),
-      data,
+      { api_key: this.api_key },
     );
+
+    if (res.error !== 0) {
+      throw new Error(`${res.error}: ${res.msg}`);
+    }
+
+    return res;
   }
 
   // GET: SMS Delivery Report \\ {id} is a placeholder for request_id
-  public async getReport(request_id: string | number, api_key: string) {
-    const data = validatePayloadWithReqID.parse({ request_id, api_key });
+  public async getReport(request_id: string | number) {
+    const data = validatePayloadWithReqID.parse({ request_id });
     const url = `${this.base}${SmsNetBdEndpoints.GET_REPORT}`.replace(
       "{id}",
       String(data.request_id),
     );
 
-    return axApiCall<SmsNetBdResponseProps>(
+    const res = await axApiCall<SmsNetBdResponseProps>(
       "post",
       url,
       composeHeaders({
         "Content-Type": "application/x-www-form-urlencoded",
       }),
-      { api_key: data.api_key },
+      { api_key: this.api_key },
     );
+
+    if (res.error !== 0) {
+      throw new Error(`${res.error}: ${res.msg}`);
+    }
+
+    return res;
   }
 }
 
-// SMS Send :: Request Interface for SmsNetBd
+/**
+ * Represents the properties required to send an SMS request via SmsNetBd.
+ *
+ * @property {string} msg - The body content of your message.
+ * @property {string} to - The recipient numbers. Multiple numbers must be separated by comma (,) (applicable for only campaign SMS). The number must start with country code (880) or standard 01X.
+ * @property {string} [schedule] - (Optional) The schedule date and time to send your message. Date and time must be formatted as Y-m-d H:i:s (e.g., 2021-10-13 16:00:52).
+ * @property {string} [sender_id] - (Optional) If you have an approved Sender ID, you can use this parameter to set your Sender ID as the sender in your messages.
+ * @property {string} [content_id] - (Required for bulk SMS) If you have an approved campaign content, you can use this parameter to set the ID of the content to use.
+ */
 export interface SmsNetBdRequestProps {
-  /*----------------------------------------------------*
-   * Your 'API KEY' is used to authenticate in our system.
-   *-----------------------------------------------------*/
-  api_key: string;
-
   /*----------------------------------------------------*
    * The body content of your message.
    *-----------------------------------------------------*/
