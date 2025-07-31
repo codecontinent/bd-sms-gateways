@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Testing...\"",
     "lint": "pnpm exec biome check --write",
-    "prepare": "husky",
+    "prepare": "pnpm exec husky",
     "clean": "rimraf dist",
     "build:js": "tsup",
     "build:types": "tsc --project tsconfig.types.json",
