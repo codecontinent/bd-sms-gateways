@@ -18,7 +18,8 @@
       "./CODE_OF_CONDUCT_BN.md",
       "./CONTRIBUTING.md",
       "./README.md",
-      "./commitlint.config.js"
+      "./commitlint.config.js",
+      "./tsup.config.ts"
     ]
   },
   "formatter": {
