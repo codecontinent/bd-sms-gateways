@@ -1,8 +1,8 @@
 import { SmsNetBd, type SmsNetBdConfig } from "./adapters/smsnetbd.js";
 
-const smsAdapters = ["sms-net-bd", "bulk-sms-dhaka"] as const;
+export const smsAdapters = ["sms-net-bd", "bulk-sms-dhaka"] as const;
 
-type ADAPTERS_MAP = {
+export type ADAPTERS_MAP = {
   "sms-net-bd": {
     client: SmsNetBd;
     config: SmsNetBdConfig;
