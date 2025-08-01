@@ -34,9 +34,25 @@ export const composeHeaders = (
 };
 
 // Check request body payload type
-const safeComposeRequestBodyData = (body: unknown) => {
+const safeComposeRequestBodyData = (
+  body: unknown,
+  target: "form" | "json" = "json",
+) => {
   if (typeof body === "object" && body !== null) {
     // If Object / Array, convert to JSON string
+
+    // if target is 'form', convert to URLSearchParams
+    if (target === "form") {
+      const formData = new URLSearchParams();
+      for (const [key, value] of Object.entries(body)) {
+        if (value !== undefined) {
+          formData.append(key, String(value));
+        }
+      }
+      return formData;
+    }
+
+    // else, JSON payload
     return JSON.stringify(body);
   }
 
@@ -47,29 +63,50 @@ const safeComposeRequestBodyData = (body: unknown) => {
 export const axApiCall = async <R = unknown>(
   method: HttpRequestType,
   endpoint: string,
-  headers: Record<string, unknown> | undefined = undefined,
+  headers: Record<string, string> = {},
   body: unknown = undefined,
+  target: "form" | "json" = "json",
 ) => {
   try {
-    // Example axios call
-    const response = await axios[method]<R>(endpoint, {
-      headers,
-      data: body ? safeComposeRequestBodyData(body) : undefined,
-    });
+    const isWriteMethod = ["post", "put", "patch", "delete"].includes(
+      method.toLowerCase(),
+    );
 
-    if (!response) {
+    const formattedBody = body
+      ? safeComposeRequestBodyData(body, target)
+      : undefined;
+
+    // Set content-type based on target
+    if (formattedBody) {
+      headers["Content-Type"] =
+        target === "form"
+          ? "application/x-www-form-urlencoded"
+          : "application/json";
+    }
+
+    const axiosConfig = {
+      headers,
+    };
+
+    // We are recommending to use 'POST' method for all write operations
+    // even, read operations if supported with payload JSON/FORM data
+    // by the API providers e.g. SMSNetBd does support both methods
+    // For more, visit https://sms.net.bd/api
+    const response = isWriteMethod
+      ? await axios[method]<R>(endpoint, formattedBody, axiosConfig)
+      : await axios[method]<R>(endpoint, axiosConfig); // e.g., GET
+
+    if (!response || !response.data) {
       throw new Error("No response data received from the API.");
     }
+
     return response.data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      // Handle Axios error
       throw new Error(`API Error: ${err.response?.data?.msg || err.message}`);
-    } else {
-      // Handle other errors
-      throw new Error(
-        `Unexpected Error: ${err instanceof Error ? err.message : "Unknown error"}`,
-      );
     }
+    throw new Error(
+      `Unexpected Error: ${err instanceof Error ? err.message : "Unknown error"}`,
+    );
   }
 };
