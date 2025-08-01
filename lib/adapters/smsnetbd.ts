@@ -3,7 +3,7 @@
  * [SmsNetBd](https://sms.net.bd) SMS Gateway Adapter
  * This adapter is used to send SMS via SmsNetBd API.
  * -----------------------------------------------------------
- * Author: Mr. Meaow
+ * Author: @codecontinent/opensource team.
  * License: [MIT](https://opensource.org/license/mit/)
  * Version: 0.0.1
  * Date: 2025-30-07
@@ -13,7 +13,7 @@
 import { z } from "zod";
 import { axApiCall, composeHeaders } from "../common.js";
 
-const SmsNetBdEndpoints = {
+export const SmsNetBdEndpoints = {
   SEND_SMS: "/sendsms",
   GET_BALANCE: "/user/balance/",
   GET_REPORT: "/report/request/{id}/", // {id} is a placeholder for request_id
@@ -31,11 +31,11 @@ const SmsNetBdEndpoints = {
  *----------------------------------------------------------------*/
 
 // schema for validating the payloads ...
-const validatePayloadWithReqID = z.object({
+export const validatePayloadWithReqID = z.object({
   request_id: z.union([z.string(), z.number()]).transform((val) => String(val)),
 });
 
-const validateSendSmsPayload = z.object({
+export const validateSendSmsPayload = z.object({
   msg: z.string().min(1, "Message content is required"),
   to: z
     .string()
@@ -87,18 +87,6 @@ export interface SmsNetBdConfig {
  * @property {string} base - Base URL for the API, defaults to "https://api.sms.net.bd".
  * @property {string} api_key - API key for authentication.
  * @throws {Error} If the payload validation fails or if the API response indicates an error.
- * @example
- * const smsAdapter = new SmsNetBd({
- *   api_key: "your_api_key_here",
- *   base: "https://api.sms.net.bd" // Optional, defaults to this value
- * });
- * await smsAdapter.sendSms({
- *  msg: "Hello, this is a test message!",
- *  to: "8801XXXXXXXX, 8801YYYYYYYY",
- *  schedule: "2025-07-30 10:00:00", // Optional
- *  sender_id: "YourSenderID", // Optional
- *  content_id: "12345" // Optional, required for bulk SMS
- * });
  */
 export class SmsNetBd {
   private base: string;

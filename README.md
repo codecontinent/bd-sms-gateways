@@ -26,7 +26,7 @@ bun add @bdcode/sms
 >
 > ```ts
 > // Example: Import via esm.sh CDN
-> import { SmsClient } from "https://esm.sh/@bdcode/sms";
+> import { SmsGateway } from "https://esm.sh/@bdcode/sms";
 > ```
 
 **Example Usage**
@@ -55,4 +55,4 @@ await sms.client.getReport("12345");
 - ⏳ [Bulk-SMS-Dhaka](https://bulksmsdhaka.com)
 - 🔎 (Suggest us or propose & contribute)
 
-Made with 💚 by `@github/codecontinent`
+Made with 💚 by @codecontinent/opensource team and contributors.

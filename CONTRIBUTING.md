@@ -26,10 +26,14 @@ pnpm test      # Runs Node + Deno tests
 deno test      # Deno-নির্দিষ্ট জন্য ঐচ্ছিক
 ```
 
+> [!NOTE]
+> Test utilse or tools are not implemented yet.
+> Coming soon!
+
 4. **Format and lint**:  
 (কোড ফরম্যাট এবং লিন্ট করুন:)
 ```bash
-pnpm exec biome
+pnpm lint
 ```
 
 ## 🧑‍💻 How to Contribute (কিভাবে অবদান রাখবেন)
@@ -112,6 +116,12 @@ Look for issues tagged:
 
 - We label merged or approved PRs as `hacktoberfest-accepted` so they count toward the event.  
  (আমরা মিশ্রিত বা অনুমোদিত PR-এ `hacktoberfest-accepted` লেবেল দিয়ে থাকি যাতে ইভেন্টে গণনা হয়।)
+
+> [!NOTE]
+> `Hacktoberfest` is a tech festival for the open-source community that happens
+> only in `October` each year.
+> ( `Hacktoberfest` হলো ওপেন সোর্স কমিউনিটির জন্য একটি টেক ফেস্টিভ্যাল, 
+> যা প্রতি বছর শুধুমাত্র `অক্টোবর` মাসে অনুষ্ঠিত হয়। )
 
 ## 🚢 Release Process (রিলিজ প্রক্রিয়া)
 

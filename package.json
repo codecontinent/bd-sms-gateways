@@ -45,19 +45,18 @@
   "keywords": [
     "sms",
     "sms-gateway",
-    "sms-client",
+    "sms-sdk",
     "sms-provider",
-    "bangladeshi-sms",
+    "bd-sms-sdk",
     "bd-sms",
     "bd-sms-gateway",
+    "bd-sms-gateways",
     "node",
     "deno",
     "bun",
     "cloudflare-workers",
     "typescript",
-    "javascript",
-    "esm",
-    "cjs"
+    "javascript"
   ],
   "author": {
     "name": "CodeContinent",
@@ -109,7 +108,9 @@
   },
   "tsup": {
     "entry": [
-      "lib/index.ts"
+      "lib/index.ts",
+      "lib/mod.ts",
+      "lib/adapters/smsnetbd.ts"
     ],
     "format": [
       "esm",
