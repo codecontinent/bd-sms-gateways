@@ -115,6 +115,7 @@ export class SmsNetBd {
         "Content-Type": "application/x-www-form-urlencoded",
       }),
       { ...parsed.data, api_key: this.api_key }, // Include api_key from config
+      "form", // Use form-urlencoded for sending SMS
     );
 
     if (res.error !== 0) {
@@ -133,6 +134,7 @@ export class SmsNetBd {
         "Content-Type": "application/x-www-form-urlencoded",
       }),
       { api_key: this.api_key },
+      "form", // Use form-urlencoded for getting balance
     );
 
     if (res.error !== 0) {
@@ -157,6 +159,7 @@ export class SmsNetBd {
         "Content-Type": "application/x-www-form-urlencoded",
       }),
       { api_key: this.api_key },
+      "form", // Use form-urlencoded for getting report
     );
 
     if (res.error !== 0) {

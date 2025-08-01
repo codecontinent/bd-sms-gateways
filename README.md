@@ -21,7 +21,7 @@ bun add @bdcode/sms
 
 ```
 
-> [!WARNING]  
+> [!NOTE]  
 > If you are using Deno, then follow the CDN (e.g. esm.sh) way
 >
 > ```ts
@@ -34,10 +34,21 @@ bun add @bdcode/sms
 > Using `SMSNetBD` adapter for this example.
 
 ```ts
-const sms = new SmsGateway("sms-net-bd", { api_key: "<your_api_key_here>" });
+const sms = new SmsGateway(
+    "sms-net-bd", 
+    { api_key: "<your_api_key_here>" }
+);
+
 
 // Send SMS
-await sms.client.sendSms({ to: "8801300112233", msg: "Hello from SmsNetBD!" });
+await sms.client.sendSms({ 
+    to: "8801300112233", 
+    msg: "Hello from SmsNetBD!" 
+
+    // schedule: "2021-10-13 16:00:52", // can be scheduled
+    // sender_id: "YourSenderID", // uses sender-id/masking 
+    // content_id: "YourContentID", // only for bulk-sms
+});
 
 // Get Balance
 await sms.client.getBalance();
